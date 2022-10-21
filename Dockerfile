@@ -17,5 +17,5 @@ RUN R -e "options(warn=2); install.packages('viridis')"
 RUN R -e "options(warn=2); install.packages('dplyr')"
 
 RUN rm -rf /srv/shiny-server/*
-COPY apps/pub2gene_human /srv/shiny-server/pub2gene_human
-COPY apps/pub2keyword_human /srv/shiny-server/pub2keyword_human
+COPY pub2gene_human /srv/shiny-server/pub2gene_human
+COPY pub2keyword_human /srv/shiny-server/pub2keyword_human
