@@ -36,15 +36,15 @@ body <- dashboardBody(
   DTOutput("table1"),
   p(style = "margin-bottom: 10px;"),
   hr(),
-  sliderInput(inputId = "std_res", label="Standard residual cutoff", min=0,max=10,value=1),
-  sliderInput(inputId = "min_ov", label="Minimum overlap cutoff", min = 1,max = 10,value = 2),
-  actionButton(inputId = "Cutoff", label = "Cut off"),
+  sliderInput(inputId = "std_res", label="cut-off value for standard residual", min=0,max=10,value=1),
+  sliderInput(inputId = "min_ov", label="cut-off value for minimum overlap", min = 1,max = 10,value = 2),
+  actionButton(inputId = "Cutoff", label = "Cut-off"),
   br(),
   htmlOutput("title2"),
   plotOutput("plot2"),
   br(),
   DTOutput("table2"),
-  downloadButton("df_cut", "Download cut off result as csv")
+  downloadButton("df_cut", "Download cut-off result as csv")
 )
 ui <- dashboardPage(header = header,sidebar =  side,body =  body)
 
@@ -141,7 +141,8 @@ server <- function(input,output, session){
             g1 <- g1 + scale_color_gradientn(colours = viridis::turbo(8))
             g1 <- g1 + geom_smooth(data=df.pred, aes(x=x,y=y), method = "lm")
             g1 <- g1 + coord_cartesian(ylim = c(0.9, max(count)*1.1))
-            g1 <- g1 + labs(x="total publication for each gene",y="overlapped publication with search words")
+            g1 <- g1 + labs(x="total publication for each gene",y="overlapped publication with search result")
+            g1 <- g1 + annotate("text", x=1, y=max(df$overlap_pub), label=paste("total number of results=", length(reac$ids)),hjust=0,size=5)
             g1 <- g1 +theme(axis.text=element_text(size=12,family = "sans"),
                             axis.title=element_text(size=14,face="bold"),
                             plot.title = element_text(size=14, face="bold"))
@@ -177,7 +178,7 @@ server <- function(input,output, session){
       #df_cut$overlaped_pmid <- as.character(ov_ids)
 
       reac$df_cut <- df_cut
-      output$title2 <- renderText({print("<font size='+2'><b> Cut off result </b></font>")})
+      output$title2 <- renderText({print("<font size='+2'><b> Cut-off result </b></font>")})
       output$table2 <- renderDT({datatable(df_cut, filter="top", rownames = F)})
       output$df_cut <- downloadHandler(
         filename = function() {

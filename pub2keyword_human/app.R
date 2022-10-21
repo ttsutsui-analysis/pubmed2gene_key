@@ -39,11 +39,11 @@ body <- dashboardBody(
   p(style = "margin-bottom: 10px;"),
   hr(),
   plotOutput("plot1"),
-  fluidRow(column(4,sliderInput(inputId = "BF_p", label = "Plot cutoff: Bonferroni corrected p-value", min=0,max=0.2,value=0.01, step=0.001),
-                  sliderInput(inputId = "FE", label="Plot cutoff: Minimum fold enrichment in query", min=1,max=100, step=1, value=10)
+  fluidRow(column(4,sliderInput(inputId = "BF_p", label = "Plot cut-off: Bonferroni corrected p-value", min=0,max=0.2,value=0.01, step=0.001),
+                  sliderInput(inputId = "FE", label="Plot cut-off: Minimum fold enrichment in query", min=1,max=100, step=1, value=10)
                   ),
-           column(4,sliderInput(inputId = "Freq", label="Plot cutoff: Minimum frequency in query", min=1, max=50,step=1, value=3),
-                                    sliderInput(inputId = "numkey", label= "Plot cutoff: Number of Keyword", min=10, max=50, step=1, value=30))),
+           column(4,sliderInput(inputId = "Freq", label="Plot cut-off: Minimum frequency in query", min=1, max=50,step=1, value=3),
+                                    sliderInput(inputId = "numkey", label= "Plot cut-off: Number of Keyword", min=10, max=50, step=1, value=30))),
 
   checkboxInput(inputId = "check", label = "x-axis log scale"),
   actionButton(inputId = "plot", label = "Re-draw plot"),
