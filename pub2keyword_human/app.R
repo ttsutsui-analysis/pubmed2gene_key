@@ -43,7 +43,7 @@ body <- dashboardBody(
                   sliderInput(inputId = "FE", label="Plot cut-off: Minimum fold enrichment in query", min=1,max=100, step=1, value=10)
                   ),
            column(4,sliderInput(inputId = "Freq", label="Plot cut-off: Minimum frequency in query", min=1, max=50,step=1, value=3),
-                                    sliderInput(inputId = "numkey", label= "Plot cut-off: Number of Keyword", min=10, max=50, step=1, value=30))),
+                                    sliderInput(inputId = "numkey", label= "Plot cut-off: Number of displayed keyword", min=10, max=50, step=1, value=30))),
 
   checkboxInput(inputId = "check", label = "x-axis log scale"),
   actionButton(inputId = "plot", label = "Re-draw plot"),

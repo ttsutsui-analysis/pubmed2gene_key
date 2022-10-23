@@ -1,8 +1,12 @@
 ## Installation:
 
 #### If you/your lab already have shinyServer
-required library: libxml2  
-install required R packages
+Install required library  
+
+	apt-get update
+	apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
+	  	
+Install required R packages
 
 	pkgs <- c("rentrez","XML","shinydashboard","stringr","tm","DT","ggplot2","future","future.apply","progressr","pbapply","viridis","dplyr")  
 	install.packages(pkgs)
