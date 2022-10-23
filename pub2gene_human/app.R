@@ -90,13 +90,18 @@ server <- function(input,output, session){
     output$title2 <- NULL
     
     reac$term <- input$query
-    reac$std_res <- input$std_res
+    
     if(nchar(reac$term)>0){
       withProgress(message="searching", {
         incProgress(0.3)
-        res <- entrez_search(db="pubmed", term=reac$term, retmax=10^6)
-        reac$ids <- res$ids
-        total <- sapply(gene.all, length)
+        res <- try({entrez_search(db="pubmed", term=reac$term, retmax=10^6)})
+        if(length(res)==1){
+          ids <- "connection error"
+        } else {
+          reac$ids <- res$ids
+          total <- sapply(gene.all, length)
+        }
+
       })
       
       tf <- ifelse(length(reac$ids)>0,!is.na(reac$ids),FALSE)
@@ -154,6 +159,8 @@ server <- function(input,output, session){
             output$title1 <- renderText({print("<b><font size='+1'> no overlaped publication with gene </font></b>")})
           }
           })
+      } else if(ids=="connection error"){
+        output$title1 <- renderText({print("<font size='+1'> entrez connection error. Please waith and try again a little bit later. </font>")})
       } else{
         output$title1 <- renderText({print("<b><font size='+2'> no article found </font></b>")})
       }
@@ -161,6 +168,7 @@ server <- function(input,output, session){
   })
   
   observeEvent(input$Cutoff,{
+    reac$std_res <- input$std_res
       df<- reac$df1
       df1 <- df
       df1$TF <- df$std_res>= input$std_res & df$overlap_pub>= input$min_ov

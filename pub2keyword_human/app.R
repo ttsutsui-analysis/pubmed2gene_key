@@ -96,10 +96,13 @@ server <- function(input,output, session){
     if(nchar(reac$term)>0){
       withProgress(message="searching", {
         incProgress(0.2)
-        res <- entrez_search(db="pubmed",retmax=10^3,term = reac$term)
-        incProgress(0.4)
-        reac$ids <- res$ids
-        incProgress(0.4)
+        res <- try({entrez_search(db="pubmed",retmax=10^3,term = reac$term)})
+        if(length(res)==1){
+          ids <- "connection error"
+        } else {
+          reac$ids <- res$ids
+          incProgress(0.4)
+        }
       })
       
       tf <- ifelse(length(reac$ids)>0,!is.na(reac$ids),FALSE)
@@ -200,7 +203,9 @@ server <- function(input,output, session){
           })
         }
         
-      } else {
+      } else if(ids=="connection error"){
+        output$title <- renderText({print("<font size='+1'> entrez connection error. Please waith and try again a little bit later. </font>")})
+      }else{
         output$title1 <- renderText({print("<font size='+2'><b> No article for search words </b></font>")})
       }
     }
