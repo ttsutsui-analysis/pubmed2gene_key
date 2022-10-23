@@ -25,3 +25,15 @@ count.para <- function(all, pmid, cores){
   plan(sequential)
   return(count)
 }
+
+# pickup overlapped pmid for each cut-offed gene
+pick.pmid <- function(all, pmid, cutoff){
+  all.cut <- all[cutoff]
+  count <- pbsapply(all.cut, function(x){
+    tmp <- x[x %in% pmid]
+    incProgress(1/length(all.cut))
+    tmp <- paste0(tmp, collapse = ", ")
+    return(tmp)
+  })
+  return(count)
+}

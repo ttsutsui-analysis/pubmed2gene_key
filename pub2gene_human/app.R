@@ -36,8 +36,8 @@ body <- dashboardBody(
   DTOutput("table1"),
   p(style = "margin-bottom: 10px;"),
   hr(),
-  sliderInput(inputId = "std_res", label="cut-off value for standard residual", min=0,max=10,value=1),
-  sliderInput(inputId = "min_ov", label="cut-off value for minimum overlap", min = 1,max = 10,value = 2),
+  sliderInput(inputId = "std_res", label="Standard residual cut-off", min=0,max=10,value=1),
+  sliderInput(inputId = "min_ov", label="Minimum overlap cut-off", min = 1,max = 10,value = 2),
   actionButton(inputId = "Cutoff", label = "Cut-off"),
   br(),
   htmlOutput("title2"),
@@ -55,7 +55,7 @@ server <- function(input,output, session){
     gene.all <- readRDS("data/gene_allpub_ids_list.rds")
     incProgress(0.9)})
 
-  reac <- reactiveValues(term=NA, ids=NA, df1=NA, df_cut=NA, proxy=NA, APIkey=NA)
+  reac <- reactiveValues(term=NA, ids=NA, df1=NA, df_cut=NA, proxy=NA, APIkey=NA, std_res=NA)
  
   observeEvent(input$APIreg, {
     withProgress(message = "regitering API key", {
@@ -81,6 +81,7 @@ server <- function(input,output, session){
     }
     
     reac$term <- NA
+    reac$std_res <- NA
     output$plot1 <- NULL
     output$table1 <- NULL
     output$plot2 <- NULL
@@ -89,6 +90,7 @@ server <- function(input,output, session){
     output$title2 <- NULL
     
     reac$term <- input$query
+    reac$std_res <- input$std_res
     if(nchar(reac$term)>0){
       withProgress(message="searching", {
         incProgress(0.3)
@@ -133,16 +135,16 @@ server <- function(input,output, session){
             reac$df1 <- df
             
             output$title1 <- renderText({print("<font size='+2'><b> Search result </b></font>")})
+            names(df) <- c("SYMBOL", "total number of pmid for each gene", "number of overlapped pmid", "standard residual")
             output$table1 <- renderDT({datatable(df, filter="top", rownames = F)})
             
-            g1 <- ggplot(df, aes(x=total_pub, y=overlap_pub))
+            g1 <- ggplot(reac$df1, aes(x=total_pub, y=overlap_pub))
             g1 <- g1 + geom_point(aes(color=std_res))
             g1 <- g1 + scale_x_log10() + scale_y_log10() 
             g1 <- g1 + scale_color_gradientn(colours = viridis::turbo(8))
             g1 <- g1 + geom_smooth(data=df.pred, aes(x=x,y=y), method = "lm")
             g1 <- g1 + coord_cartesian(ylim = c(0.9, max(count)*1.1))
-            g1 <- g1 + labs(x="total publication for each gene",y="overlapped publication with search result")
-            g1 <- g1 + annotate("text", x=1, y=max(df$overlap_pub), label=paste("total number of results=", length(reac$ids)),hjust=0,size=5)
+            g1 <- g1 + labs(x="total publication for each gene",y="overlapped publication with search words")
             g1 <- g1 +theme(axis.text=element_text(size=12,family = "sans"),
                             axis.title=element_text(size=14,face="bold"),
                             plot.title = element_text(size=14, face="bold"))
@@ -166,7 +168,7 @@ server <- function(input,output, session){
       g2 <- ggplot(df1, aes(x=total_pub, y=overlap_pub))
       g2 <- g2 + geom_point(aes(color=TF)) + scale_color_manual(values=c("gray60","green2"))
       g2 <- g2 + scale_x_log10() + scale_y_log10()
-      g2 <- g2 + labs(x="total publication for each gene",y="overlapped publication with search words", color="cut off genes")
+      g2 <- g2 + labs(x="total publication for each gene",y="overlapped publication with search words", color="cut-off genes")
       g2 <- g2 +theme(axis.text=element_text(size=12,family = "sans"),
                       axis.title=element_text(size=14,face="bold"),
                       plot.title = element_text(size=14, face="bold"))
@@ -179,16 +181,27 @@ server <- function(input,output, session){
 
       reac$df_cut <- df_cut
       output$title2 <- renderText({print("<font size='+2'><b> Cut-off result </b></font>")})
+      names(df_cut) <- c("SYMBOL", "total number of pmid for each gene", "number of overlapped pmid", "standard residual")
       output$table2 <- renderDT({datatable(df_cut, filter="top", rownames = F)})
+      
       output$df_cut <- downloadHandler(
         filename = function() {
-          paste0(reac$term, " std_residual=",input$std_res,".csv")
+          paste0(reac$term, " std_residual=",reac$std_res,".csv")
         },
         content = function(file) {
-          write.csv(reac$df_cut, file, row.names = F)
+          withProgress(message = "making csv",{
+            df <- reac$df_cut
+            symbs <- reac$df_cut$symbol
+            df$pmids <- pick.pmid(gene.all, reac$ids, symbs)
+            names(df) <- c("SYMBOL", "total number of pmid for each gene", "number of overlapped pmid", "standard residual", "overlapped pmids")
+          })
+          write.csv(df, file, row.names = F)
         }
       )
+      
     })
+  
+
 }      
 
 shinyApp(ui=ui, server = server)
