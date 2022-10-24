@@ -52,7 +52,7 @@ body <- dashboardBody(
 
 ui <- dashboardPage(header = header,sidebar =  side,body =  body)
 
-server <- function(input,output, session){
+server <- function(input, output, session){
   withProgress(message = "Loading",{
     incProgress(0.1)
     bg.key.df <- readRDS("data/gene_allpub_keyword_df_cleaned.rds")
@@ -156,8 +156,8 @@ server <- function(input,output, session){
           #updateSliderInput(session, "FE", max=max(df.tmp$FoldEnrich))
           #updateSliderInput(session, "Freq", value=freq_cut)
           names(df.tmp) <- c("Keyword","Fold enrichment","Frequency in query", "Bonferroni corrected pvalue")
-          dt2 <- datatable(df.tmp, filter="top", rownames = F)
-          output$table2 <- renderDT({dt2})
+          
+          output$table2 <- renderDT({datatable(df.tmp, filter="top", rownames = F)})
           output$title2 <- renderText({print("<font size='+2'><b>Enrichment analysis on each keywords</b><font>")})
           output$key_df <- downloadHandler(
             filename = function() {
@@ -171,8 +171,6 @@ server <- function(input,output, session){
           withProgress(message= "plotting", {
             res <- reac$key_df
             df <- data.frame(key=res$Keyword, BF_p=-log10(ifelse(res$BF_p==0, min(res$BF_p[res$BF_p!=0]), res$BF_p)), freq=res$Freq_in_query,FE=res$FoldEnrich)
-            df <- df[order(df$FE, decreasing = T), ]
-            df <- df[df$FE>1,]
             df <- df[order(df$freq, decreasing = T), ]
             df <- df[order(df$BF_p, decreasing = T), ]
             df$key <- factor(df$key, levels=rev(df$key))
@@ -215,8 +213,6 @@ server <- function(input,output, session){
     withProgress(message="re-plotting", {
       res <- reac$key_df
       df <- data.frame(key=res$Keyword, BF_p=-log10(ifelse(res$BF_p==0, min(res$BF_p[res$BF_p!=0]), res$BF_p)), freq=res$Freq_in_query,FE=res$FoldEnrich)
-      df <- df[df$FE>1,]
-      df <- df[order(df$FE, decreasing = T), ]
       df <- df[order(df$freq, decreasing = T), ]
       df <- df[order(df$BF_p, decreasing = T), ]
       df$key <- factor(df$key, levels=rev(df$key))

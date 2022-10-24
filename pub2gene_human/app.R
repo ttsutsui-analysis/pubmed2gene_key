@@ -101,7 +101,6 @@ server <- function(input,output, session){
           reac$ids <- res$ids
           total <- sapply(gene.all, length)
         }
-
       })
       
       tf <- ifelse(length(reac$ids)>0,!is.na(reac$ids),FALSE)
@@ -125,23 +124,20 @@ server <- function(input,output, session){
             model <- glm.nb(overlap_pub ~ log10(total_pub), data=df)
             incProgress(0.2)
             std_res <- rstandard(model)
-            x <- c(2*4^(0:7))
-            y <- predict(model, newdata = data.frame(total_pub=x))
-            y <- exp(y)
-            
-            df.pred <- data.frame(x=x,y=y)
-            
             std_res <- round(std_res, 3)
-            updateSliderInput(session=session, inputId = "std_res", 
-                              min=0,max=max(std_res), value = 1.5, step = 0.01)
-            incProgress(0.4)
             df$std_res <- std_res
             df <- df[order(df$std_res, decreasing = T), ]
             reac$df1 <- df
-            
-            output$title1 <- renderText({print("<font size='+2'><b> Search result </b></font>")})
-            names(df) <- c("SYMBOL", "total number of pmid for each gene", "number of overlapped pmid", "standard residual")
-            output$table1 <- renderDT({datatable(df, filter="top", rownames = F)})
+            updateSliderInput(session=session, inputId = "std_res", 
+                              min=0,max=max(std_res), value = 1.5, step = 0.01)
+            incProgress(0.4)
+
+            x <- c(2*4^(0:7))
+            y <- predict(model, newdata = data.frame(total_pub=x))
+            y <- exp(y)
+            df.pred <- data.frame(x=x,y=y)
+
+
             
             g1 <- ggplot(reac$df1, aes(x=total_pub, y=overlap_pub))
             g1 <- g1 + geom_point(aes(color=std_res))
@@ -154,7 +150,10 @@ server <- function(input,output, session){
                             axis.title=element_text(size=14,face="bold"),
                             plot.title = element_text(size=14, face="bold"))
             output$plot1 <- renderPlot({plot(g1)})
-            incProgress(0.4)
+            output$title1 <- renderText({print("<font size='+2'><b> Search result </b></font>")})
+            names(df) <- c("SYMBOL", "total number of pmid for each gene", "number of overlapped pmid", "standard residual")
+            output$table1 <- renderDT({datatable(df, filter="top", rownames = F)})
+            
           } else {
             output$title1 <- renderText({print("<b><font size='+1'> no overlaped publication with gene </font></b>")})
           }
