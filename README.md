@@ -19,8 +19,8 @@ Then clone repository
 #### For local machine without shinySever
 This requires docker. If you don't have docker, download from [https://docs.docker.com/engine/install/]().  
 
-	docker pull ghcr.io/ttsutsui-analysis/ttsutsui/pub2gene_key:1.0
-	docker run --rm -d --name pub2gene_key -p 10020:3838 ghcr.io/ttsutsui-analysis/ttsutsui/pub2gene_key:1.0
+	docker pull ghcr.io/ttsutsui-analysis/pub2gene_key:1.0
+	docker run --rm -d --name pub2gene_key -p 10020:3838 ghcr.io/ttsutsui-analysis/pub2gene_key:1.0
 You can access index page via [http://localhost:10020]()
 
 ## Introduction
@@ -40,3 +40,15 @@ Usage introduction written below.
 ![pub2geneFig4](https://user-images.githubusercontent.com/116254113/197518874-586c2a46-5a57-4cf9-87f2-b710012e3ec1.png)
   
 ### pub2keyword_human
+This app will obtain keywords from pubmed search result articles. Obtained keywords will be subjected to word enrichment analysis comparing with background keywords from ~1 million articles all of those are linked to human genes.
+Usage of this app is below.  
+1. Fill your entrez API key and proxy URL, if you want.   
+2. Fill your interest search words and push search button.
+![pub2keyFig1](https://user-images.githubusercontent.com/116254113/197530462-968846bb-1106-46fc-ac19-2a33e345e858.png)
+3. App will search recent top 1000 articles for your search words. So far, only top 1000 articles are used for further enrichment analysis due to computation speed.  
+4. You can see two table and one plot. First table is for title corresponding keywords for each article and second table represent enrichment analysis result for each keyword.  
+5. You can adjust plot by slidebars below.  
+![pub2keyFig2](https://user-images.githubusercontent.com/116254113/197532544-59728880-526b-47b8-822d-e04f4f8897f2.png)
+
+## Reference
+TO BE DETERMIND
