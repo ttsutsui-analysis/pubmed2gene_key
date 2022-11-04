@@ -72,6 +72,7 @@ term.freq.clean <- function(df, bg, core){
     term.stem <- toupper(terms)
     term.stem <- gsub("-", "", term.stem)
     term.stem <- gsub("‐", "", term.stem)
+    term.stem <- gsub("–", "", term.stem)
     term.stem <- gsub("\\s","", term.stem)
     incProgress()
     term.stem.dup <- duplicated(term.stem)
