@@ -31,6 +31,7 @@ side <- dashboardSidebar(
 )
 
 body <- dashboardBody(
+  tags$head(tags$style(".shiny-notification {position: fixed; top: calc(50%); left: calc(50%);width: 30%; max-width: 450px; margin-left: auto;margin-right: auto;")),
   htmlOutput("title1"),
   plotOutput("plot1"),
   DTOutput("table1"),
@@ -146,6 +147,7 @@ server <- function(input,output, session){
             g1 <- g1 + geom_smooth(data=df.pred, aes(x=x,y=y), method = "lm")
             g1 <- g1 + coord_cartesian(ylim = c(0.9, max(count)*1.1))
             g1 <- g1 + labs(x="total publication for each gene",y="overlapped publication with search words")
+            g1 <- g1 + ggplot2::annotate("text", x=)
             g1 <- g1 +theme(axis.text=element_text(size=12,family = "sans"),
                             axis.title=element_text(size=14,face="bold"),
                             plot.title = element_text(size=14, face="bold"))

@@ -30,6 +30,7 @@ side <- dashboardSidebar(
 )
 
 body <- dashboardBody(
+  tags$head(tags$style(".shiny-notification {position: fixed; top: calc(50%); left: calc(50%);width: 30%; max-width: 450px; margin-left: auto;margin-right: auto;")),
   htmlOutput("title1"),
   DTOutput("table1"),
   p(style = "margin-bottom: 10px;"),
