@@ -39,6 +39,7 @@ body <- dashboardBody(
   DTOutput("table2"),
   p(style = "margin-bottom: 10px;"),
   hr(),
+  htmlOutput("title3"),
   plotOutput("plot1"),
   fluidRow(column(4,sliderInput(inputId = "BF_p", label = "Plot cut-off: Bonferroni corrected p-value", min=0,max=0.2,value=0.01, step=0.001),
                   sliderInput(inputId = "FE", label="Plot cut-off: Minimum fold enrichment in query", min=1,max=100, step=1, value=10)
@@ -91,6 +92,7 @@ server <- function(input, output, session){
     output$plot1 <- NULL
     output$title1 <- NULL
     output$title2 <- NULL
+    output$title3 <- NULL
     
     reac$term <- input$query
     
@@ -198,6 +200,7 @@ server <- function(input, output, session){
                                plot.title = element_text(size=14, face="bold"))
               incProgress(0.5)
               output$plot1 <- renderPlot({plot(p1)})
+            }else {output$title3 <- renderText({print("<font size='+1'> No keywords were retained.<br> Please consider change cut-off value or search words. </font>")})
             }
           })
         }
@@ -212,6 +215,8 @@ server <- function(input, output, session){
   
   observeEvent(input$plot, {
     withProgress(message="re-plotting", {
+      output$title3 <- NULL
+      output$plot1 <- NULL
       res <- reac$key_df
       df <- data.frame(key=res$Keyword, BF_p=-log10(ifelse(res$BF_p==0, min(res$BF_p[res$BF_p!=0]), res$BF_p)), freq=res$Freq_in_query,FE=res$FoldEnrich)
       df <- df[order(df$freq, decreasing = T), ]
@@ -237,7 +242,7 @@ server <- function(input, output, session){
                          plot.title = element_text(size=14, face="bold"))
         incProgress(0.5)
         output$plot1 <- renderPlot({plot(p1)})
-      }
+      }else{output$title3 <- renderText({print("<font size='+1'> No keywords were retained.<br> Please consider change cut-off value or search words. </font>")})}
       
     })
     
