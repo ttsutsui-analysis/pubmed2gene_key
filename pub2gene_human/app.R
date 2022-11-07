@@ -159,7 +159,7 @@ server <- function(input,output, session){
           }
           })
       } else if(ids=="connection error"){
-        output$title1 <- renderText({print("<font size='+1'> Entrez connection error.<br>Please waith and try again a little bit later. </font>")})
+        output$title1 <- renderText({print("<font size='+1'> Entrez connection error.<br>Please wait and try again a little bit later. </font>")})
       } else{
         output$title1 <- renderText({print("<b><font size='+2'> no article found </font></b>")})
       }
