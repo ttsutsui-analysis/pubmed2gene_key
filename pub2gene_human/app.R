@@ -138,8 +138,6 @@ server <- function(input,output, session){
             y <- exp(y)
             df.pred <- data.frame(x=x,y=y)
 
-
-            
             g1 <- ggplot(reac$df1, aes(x=total_pub, y=overlap_pub))
             g1 <- g1 + geom_point(aes(color=std_res))
             g1 <- g1 + scale_x_log10() + scale_y_log10() 
@@ -147,7 +145,7 @@ server <- function(input,output, session){
             g1 <- g1 + geom_smooth(data=df.pred, aes(x=x,y=y), method = "lm")
             g1 <- g1 + coord_cartesian(ylim = c(0.9, max(count)*1.1))
             g1 <- g1 + labs(x="total publication for each gene",y="overlapped publication with search words")
-            g1 <- g1 + ggplot2::annotate("text", x=)
+            g1 <- g1 + ggplot2::annotate("text", x=1,y=max(reac$df1$overlap_pub),label=paste0("total number of articles \nfor search words=", length(reac$ids)),hjust=0, fontface =2)
             g1 <- g1 +theme(axis.text=element_text(size=12,family = "sans"),
                             axis.title=element_text(size=14,face="bold"),
                             plot.title = element_text(size=14, face="bold"))
