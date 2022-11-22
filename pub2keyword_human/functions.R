@@ -15,8 +15,13 @@ get_xml <- function(ids){
     ids.i <- ids[num]
     ids.i <- na.omit(ids.i)
     upload <- entrez_post(db="pubmed", id=ids.i)
-    rec <- entrez_fetch(db="pubmed", rettype = "xml", parsed=TRUE, web_history = upload)
-    rec.ls <- c(rec.ls, rec)
+    rec <- try({entrez_fetch(db="pubmed", rettype = "xml", parsed=TRUE, web_history = upload)})
+    if(length(rec)!=1){
+      rec.ls <- c(rec.ls, rec)
+    } else {
+      rec <- entrez_fetch(db="pubmed", rettype = "xml", parsed=TRUE, web_history = upload)
+      rec.ls <- c(rec.ls, rec)
+    }
     p()
   }
   return(rec.ls)

@@ -41,6 +41,7 @@ shinyServer(function(input,output, session){
       Sys.setenv(https_proxy=reac$proxy)
     }
     
+    reac$ids <- NA
     reac$term <- NA
     reac$std_res <- NA
     output$plot1 <- NULL
@@ -57,14 +58,18 @@ shinyServer(function(input,output, session){
         incProgress(0.3)
         res <- try({entrez_search(db="pubmed", term=reac$term, retmax=10^6)})
         if(length(res)==1){
-          ids <- "connection error"
+          reac$ids <- "connection error"
         } else {
-          reac$ids <- res$ids
+          if(length(res$ids)>0){
+            reac$ids <- res$ids
+          } else {
+            reac$ids <- NA
+          }
           total <- sapply(gene.all, length)
         }
       })
       
-      tf <- ifelse(length(reac$ids)>0,!is.na(reac$ids),FALSE)
+      tf <- reac$ids!="connection error" & !is.na(reac$ids)
       if(tf){
         ids <- reac$ids
         if(input$select==1){
@@ -118,10 +123,10 @@ shinyServer(function(input,output, session){
             output$title1 <- renderText({print("<b><font size='+1'> no overlaped publication with gene </font></b>")})
           }
         })
-      } else if(ids=="connection error"){
-        output$title1 <- renderText({print("<font size='+1'> Entrez connection error.<br>Please wait and try again a little bit later. </font>")})
-      } else{
+      } else if(is.na(reac$ids)) {
         output$title1 <- renderText({print("<b><font size='+2'> no article found </font></b>")})
+      } else if(reac$ids=="connection error"){
+        output$title1 <- renderText({print("<font size='+1'> Entrez connection error.<br>Please wait and try again a little bit later. </font>")})
       }
     }
   })

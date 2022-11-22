@@ -42,7 +42,7 @@ shinyServer(function(input, output, session){
       Sys.setenv(http_proxy=reac$proxy)
       Sys.setenv(https_proxy=reac$proxy)
     }
-    
+    reac$ids <- NA
     output$table1 <- NULL
     output$table2 <- NULL
     output$plot1 <- NULL
@@ -57,14 +57,18 @@ shinyServer(function(input, output, session){
         incProgress(0.2)
         res <- try({entrez_search(db="pubmed",retmax=10^3,term = reac$term)})
         if(length(res)==1){
-          ids <- "connection error"
+          reac$ids <- "connection error"
         } else {
-          reac$ids <- res$ids
+          if(length(res$ids)>0){
+            reac$ids <- res$ids
+          } else {
+            reac$ids <- NA
+          }
           incProgress(0.4)
         }
       })
       
-      tf <- ifelse(length(reac$ids)>0,!is.na(reac$ids),FALSE)
+      tf <- reac$ids!="connection error" & !is.na(reac$ids)
       if(tf){
         ids <- reac$ids
         withProgressShiny(rec.ls <- get_xml(ids), message="retriving articles", detail =paste0("number of articles=", length(ids)))
@@ -158,10 +162,10 @@ shinyServer(function(input, output, session){
             }
           })
         }
-      } else if(ids=="connection error"){
+      } else if(is.na(reac$ids)) {
+        output$title1 <- renderText({print("<b><font size='+2'> no article found </font></b>")})
+      } else if(reac$ids=="connection error"){
         output$title1 <- renderText({print("<font size='+1'> Entrez connection error.<br>Please wait and try again a little bit later. </font>")})
-      }else{
-        output$title1 <- renderText({print("<font size='+2'><b> No article for search words </b></font>")})
       }
     }
   })
