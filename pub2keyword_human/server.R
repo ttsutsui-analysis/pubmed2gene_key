@@ -69,7 +69,7 @@ shinyServer(function(input, output, session){
       })
       
       tf <- reac$ids!="connection error" & !is.na(reac$ids)
-      if(tf){
+      if(tf[1]){
         ids <- reac$ids
         withProgressShiny(rec.ls <- get_xml(ids), message="retriving articles", detail =paste0("number of articles=", length(ids)))
         

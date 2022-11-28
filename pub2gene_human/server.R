@@ -70,7 +70,7 @@ shinyServer(function(input,output, session){
       })
       
       tf <- reac$ids!="connection error" & !is.na(reac$ids)
-      if(tf){
+      if(tf[1]){
         ids <- reac$ids
         if(input$select==1){
           print("single")
