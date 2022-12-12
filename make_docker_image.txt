@@ -1,0 +1,1 @@
+docker build -t ttsutsui/pub2gene_key:1.0 -f Dockerfile .
