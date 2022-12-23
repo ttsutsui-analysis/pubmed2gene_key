@@ -18,12 +18,6 @@ shinyServer(function(input,output, session){
   
   reac <- reactiveValues(term=NA, ids=NA, df1=NA, df_cut=NA, proxy=NA, APIkey=NA, std_res=NA)
   
-  observeEvent(input$APIreg, {
-    withProgress(message = "regitering API key", {
-      reac$APIkey <- input$APIkey
-      for(i in 1:10){Sys.sleep(0.03); incProgress()}
-    })
-  })
   
   observeEvent(input$proxyreg, {
     withProgress(message = "regitering proxy", {
@@ -33,15 +27,12 @@ shinyServer(function(input,output, session){
   })
   
   observeEvent(input$Search, {
-    if(nchar(reac$APIkey, keepNA = F)==36 & !is.na(reac$APIkey)){
-      set_entrez_key(reac$APIkey)
-    }
     if(nchar(reac$proxy, keepNA=F)>0 & !is.na(reac$proxy)){
       Sys.setenv(http_proxy=reac$proxy)
       Sys.setenv(https_proxy=reac$proxy)
     }
     
-    reac$ids <- NA
+    reac$ids <- NULL
     reac$term <- NA
     reac$std_res <- NA
     output$plot1 <- NULL
@@ -54,14 +45,16 @@ shinyServer(function(input,output, session){
     reac$term <- input$query
     
     if(nchar(reac$term)>0){
-      withProgress(message="searching", {
+      withProgress(message="searching", detail = "If the number of hits are more than 10,000, this process may take several minutes.",{
         incProgress(0.3)
-        res <- try({entrez_search(db="pubmed", term=reac$term, retmax=10^6)})
-        if(length(res)==1){
+        
+        res <- try({fetch(reac$term)})
+        
+        if(class(res)=="try-error"){
           reac$ids <- "connection error"
         } else {
-          if(length(res$ids)>0){
-            reac$ids <- res$ids
+          if(length(res)>0){
+            reac$ids <- res
           } else {
             reac$ids <- NA
           }

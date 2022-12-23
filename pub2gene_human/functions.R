@@ -3,6 +3,15 @@ library(pbapply)
 library(future.apply)
 library(progressr)
 
+# efetch using 18.2
+fetch <- function(term){
+  options(warn=2)
+  com <- paste0("esearch -db pubmed -query '", term, "' | efetch -format uid")
+  ids <- system(com, intern = T)
+  options(warn=1)
+  return(ids)
+}
+
 # count overlaps
 count.sapply <- function(all, ids){
   x <- pbsapply(all, function(x){

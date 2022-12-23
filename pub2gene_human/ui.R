@@ -13,10 +13,6 @@ side <- dashboardSidebar(
   actionButton(inputId = "Search", label="Start search"),
   br(),
   hr(),
-  textInput(inputId = "APIkey", label="If you have Entrez API key, fill below", value="API key", width = "200px"),
-  actionButton(inputId = "APIreg", label= "register API key"),
-  br(),
-  hr(),
   textInput(inputId = "proxy", label = "If you work under proxy, fill below", width = "200px", value="http://user:pass@proxyhost:proxyport"),
   actionButton(inputId = "proxyreg",label = "register proxy")
   
