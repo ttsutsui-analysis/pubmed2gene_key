@@ -1,7 +1,0 @@
-
-# github token (classic) is saved in ~/ghcr.txt
-cat ~/ghcr.txt | docker login ghcr.io -u ttsutsui-analysis --password-stdin
-
-docker tag 4fde6813b4f6 ghcr.io/ttsutsui-analysis/pub2gene_key:1.0
-
-docker push ghcr.io/ttsutsui-analysis/pub2gene_key:1.0
